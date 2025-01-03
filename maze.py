@@ -1,5 +1,7 @@
 from window import Window
 from cell import Cell
+from line import Line
+from point import Point
 import time, random
 from typing import Optional
 
@@ -25,7 +27,7 @@ class Maze:
         if seed is not None:
             random.seed(seed)
 
-        self._animate_step = 0.005
+        self._animate_step = 0.001
 
         self._create_cells()
 
@@ -123,7 +125,41 @@ class Maze:
                 cell.visited = False
     
     def solve(self) -> bool:
-        return self._solve_r(0, 0)
+        if self._win:
+            # Draw line from outer edge to middle of entrance cell
+            self._win.draw_line(
+                Line(
+                    Point(
+                        self._x1 + (self._cell_size_x / 2),
+                        self._y1
+                        ),
+                    Point(
+                        self._x1 + (self._cell_size_x / 2),
+                        self._y1 + (self._cell_size_y / 2)
+                        ),
+                    ),
+                "red"
+                )
+        if self._solve_r(0, 0):
+            if self._win:
+                # Draw line from middle of exit cell to outer edge
+                self._win.draw_line(
+                    Line(
+                        Point(
+                            self._x1 + (self._cell_size_x * (self._num_cols - 0.5)),
+                            self._y1 + (self._cell_size_y * (self._num_rows - 0.5))
+                            ),
+                        Point(
+                            self._x1 + (self._cell_size_x * (self._num_cols - 0.5)),
+                            self._y1 + (self._cell_size_y * self._num_rows)
+                            ),
+                        ),
+                    "red"
+                    )
+
+            return True
+
+        return False
     
     def _solve_r(self, row, col) -> bool:
         self._animate()
