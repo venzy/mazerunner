@@ -41,6 +41,9 @@ def main():
     bottom_wall.draw()
     y += 30
 
+    left_wall.draw_move(right_wall)
+    top_wall.draw_move(bottom_wall, undo=True)
+
     win.wait_for_close()
 
 main()

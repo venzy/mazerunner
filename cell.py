@@ -28,3 +28,8 @@ class Cell:
             self._win.draw_line(Line(top_left, top_right), "black")
         if self.has_bottom_wall:
             self._win.draw_line(Line(bottom_left, bottom_right), "black")
+
+    def draw_move(self, to_cell: "Cell", undo: bool = False):
+        mid_from: Point = Point(self._x1 + ((self._x2 - self._x1) / 2), self._y1 + ((self._y2 - self._y1) / 2))
+        mid_to: Point = Point(to_cell._x1 + ((to_cell._x2 - to_cell._x1) / 2), to_cell._y1 + ((to_cell._y2 - to_cell._y1) / 2))
+        self._win.draw_line(Line(mid_from, mid_to), "grey" if undo else "red")
