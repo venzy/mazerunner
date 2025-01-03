@@ -14,11 +14,11 @@ class Cell:
         self.has_top_wall = True
         self.has_bottom_wall = True
     
-    def draw(self):
-        top_left = Point(self._x1, self._y1)
-        top_right = Point(self._x2, self._y1)
-        bottom_left = Point(self._x1, self._y2)
-        bottom_right = Point(self._x2, self._y2)
+    def draw(self, offset_x: int = 0, offset_y: int = 0):
+        top_left = Point(self._x1 + offset_x, self._y1 + offset_y)
+        top_right = Point(self._x2 + offset_x, self._y1 + offset_y)
+        bottom_left = Point(self._x1 + offset_x, self._y2 + offset_y)
+        bottom_right = Point(self._x2 + offset_x, self._y2 + offset_y)
 
         if self.has_left_wall:
             self._win.draw_line(Line(top_left, bottom_left), "black")
@@ -29,7 +29,11 @@ class Cell:
         if self.has_bottom_wall:
             self._win.draw_line(Line(bottom_left, bottom_right), "black")
 
-    def draw_move(self, to_cell: "Cell", undo: bool = False):
-        mid_from: Point = Point(self._x1 + ((self._x2 - self._x1) / 2), self._y1 + ((self._y2 - self._y1) / 2))
-        mid_to: Point = Point(to_cell._x1 + ((to_cell._x2 - to_cell._x1) / 2), to_cell._y1 + ((to_cell._y2 - to_cell._y1) / 2))
+    def draw_move(self, to_cell: "Cell", undo: bool = False, offset_x: int = 0, offset_y: int = 0):
+        mid_from: Point = Point(
+            self._x1 + ((self._x2 - self._x1) / 2) + offset_x,
+            self._y1 + ((self._y2 - self._y1) / 2) + offset_y)
+        mid_to: Point = Point(
+            to_cell._x1 + ((to_cell._x2 - to_cell._x1) / 2) + offset_x,
+            to_cell._y1 + ((to_cell._y2 - to_cell._y1) / 2) + offset_y)
         self._win.draw_line(Line(mid_from, mid_to), "grey" if undo else "red")
