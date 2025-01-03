@@ -1,11 +1,10 @@
 from window import Window
 from cell import Cell
-from point import Point
-from line import Line
 import time
+from typing import Optional
 
 class Maze:
-    def __init__(self, x1: int, y1: int, num_rows: int, num_cols: int, cell_size_x: int, cell_size_y: int, win: Window):
+    def __init__(self, x1: int, y1: int, num_rows: int, num_cols: int, cell_size_x: int, cell_size_y: int, win: Optional[Window] = None):
         self._x1 = x1
         self._y1 = y1
         self._num_rows = num_rows
@@ -29,11 +28,12 @@ class Maze:
                 cell_top = row * self._cell_size_y
                 cell_bottom = cell_top + self._cell_size_y
                 col_list: list[Cell] = self._cells[col]
-                col_list.append(Cell(self._win, cell_left, cell_top, cell_right, cell_bottom))
+                col_list.append(Cell(cell_left, cell_top, cell_right, cell_bottom, self._win))
 
-        for col in range(self._num_cols):
-            for row in range(self._num_rows):
-                self._draw_cell(row, col)
+        if self._win:
+            for col in range(self._num_cols):
+                for row in range(self._num_rows):
+                    self._draw_cell(row, col)
     
     def _draw_cell(self, row, col):
         cell: Cell = self._cells[col][row]
@@ -41,5 +41,7 @@ class Maze:
         self._animate()
     
     def _animate(self):
+        if not self._win:
+            raise Exception("_animate() called without window")
         self._win.redraw()
         time.sleep(0.05)
