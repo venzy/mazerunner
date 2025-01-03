@@ -1,0 +1,1 @@
+Fun little Python project to revise skills learned over at https://boot.dev 😁
