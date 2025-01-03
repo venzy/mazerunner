@@ -25,14 +25,10 @@ class Cell:
         bottom_left = Point(self._x1 + offset_x, self._y2 + offset_y)
         bottom_right = Point(self._x2 + offset_x, self._y2 + offset_y)
 
-        if self.has_left_wall:
-            self._win.draw_line(Line(top_left, bottom_left), "black")
-        if self.has_right_wall:
-            self._win.draw_line(Line(top_right, bottom_right), "black")
-        if self.has_top_wall:
-            self._win.draw_line(Line(top_left, top_right), "black")
-        if self.has_bottom_wall:
-            self._win.draw_line(Line(bottom_left, bottom_right), "black")
+        self._win.draw_line(Line(top_left, bottom_left), "black" if self.has_left_wall else "#d9d9d9")
+        self._win.draw_line(Line(top_right, bottom_right), "black" if self.has_right_wall else "#d9d9d9")
+        self._win.draw_line(Line(top_left, top_right), "black" if self.has_top_wall else "#d9d9d9")
+        self._win.draw_line(Line(bottom_left, bottom_right), "black" if self.has_bottom_wall else "#d9d9d9")
 
     def draw_move(self, to_cell: "Cell", undo: bool = False, offset_x: int = 0, offset_y: int = 0):
         if not self._win:

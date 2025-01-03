@@ -14,6 +14,7 @@ class Maze:
         self._win = win
 
         self._create_cells()
+        self._break_entrance_and_exit()
 
     def _create_cells(self):
         self._cells: list[list[Cell]] = []
@@ -45,3 +46,14 @@ class Maze:
             raise Exception("_animate() called without window")
         self._win.redraw()
         time.sleep(0.05)
+    
+    def _break_entrance_and_exit(self):
+        entrance: Cell = self._cells[0][0]
+        exit: Cell = self._cells[-1][-1]
+
+        entrance.has_top_wall = False
+        exit.has_bottom_wall = False
+
+        if self._win:
+            self._draw_cell(0, 0)
+            self._draw_cell(self._num_rows - 1, self._num_cols - 1)
