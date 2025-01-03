@@ -9,7 +9,6 @@ class Tests(unittest.TestCase):
             (40, 30)
         ]
         for (num_rows, num_cols) in row_col_combos:
-            print(f"Testing with {num_rows} rows and {num_cols} cols")
             m1 = Maze(0, 0, num_rows, num_cols, 10, 10)
             self.assertEqual(
                 len(m1._cells),
@@ -30,16 +29,8 @@ class Tests(unittest.TestCase):
             (40, 30)
         ]
         for (num_rows, num_cols) in row_col_combos:
-            print(f"Testing with {num_rows} rows and {num_cols} cols")
             m1 = Maze(0, 0, num_rows, num_cols, 10, 10)
-            self.assertEqual(
-                len(m1._cells),
-                num_cols,
-            )
-            self.assertEqual(
-                len(m1._cells[0]),
-                num_rows,
-            )
+            m1._break_entrance_and_exit()
 
             entrance = m1._cells[0][0]
             self.assertFalse(entrance.has_top_wall)
@@ -55,6 +46,43 @@ class Tests(unittest.TestCase):
         
         # We don't currently test that the Maze creation rejects parameters that
         # would exceed the bounds of the canvas.
+
+    def test_maze_break_walls(self):
+        row_col_combos = [
+            (10, 12),
+            (29, 39),
+            (40, 30)
+        ]
+        for (num_rows, num_cols) in row_col_combos:
+            m1 = Maze(0, 0, num_rows, num_cols, 10, 10, None, 0)
+            m1._break_entrance_and_exit()
+            m1._break_walls_r(0, 0)
+            # We don't actually check values, just that it completes.
+            for col in m1._cells:
+                for cell in col:
+                    self.assertTrue(cell.visited)
+    
+    def test_maze_reset_cells_visited(self):
+        row_col_combos = [
+            (10, 12),
+            (29, 39),
+            (40, 30)
+        ]
+        for (num_rows, num_cols) in row_col_combos:
+            m1 = Maze(0, 0, num_rows, num_cols, 10, 10, None, 0)
+            m1._break_entrance_and_exit()
+            m1._break_walls_r(0, 0)
+
+            for col in m1._cells:
+                for cell in col:
+                    self.assertTrue(cell.visited)
+
+            m1._reset_cells_visited()
+
+            for col in m1._cells:
+                for cell in col:
+                    self.assertFalse(cell.visited)
+
 
 if __name__ == "__main__":
     unittest.main()

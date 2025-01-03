@@ -1,10 +1,20 @@
 from window import Window
 from cell import Cell
-import time
+import time, random
 from typing import Optional
 
 class Maze:
-    def __init__(self, x1: int, y1: int, num_rows: int, num_cols: int, cell_size_x: int, cell_size_y: int, win: Optional[Window] = None):
+    def __init__(
+            self,
+            x1: int,
+            y1: int,
+            num_rows: int,
+            num_cols: int,
+            cell_size_x: int,
+            cell_size_y: int,
+            win: Optional[Window] = None,
+            seed: Optional[int] = None
+            ):
         self._x1 = x1
         self._y1 = y1
         self._num_rows = num_rows
@@ -12,15 +22,17 @@ class Maze:
         self._cell_size_x = cell_size_x
         self._cell_size_y = cell_size_y
         self._win = win
+        if seed is not None:
+            random.seed(seed)
 
         self._create_cells()
-        self._break_entrance_and_exit()
+        #self._break_entrance_and_exit()
+        #self._break_walls_r(0, 0)
 
     def _create_cells(self):
         self._cells: list[list[Cell]] = []
         # Each top-level list is a column of Cell objects.
         # Cell coordinates are relative to the maze.
-        # TODO change the walls of each cell?
         for col in range(self._num_cols):
             self._cells.append([])
             cell_left = col * self._cell_size_x
@@ -57,3 +69,55 @@ class Maze:
         if self._win:
             self._draw_cell(0, 0)
             self._draw_cell(self._num_rows - 1, self._num_cols - 1)
+    
+    def _break_walls_r(self, row, col):
+        cell: Cell = self._cells[col][row]
+        cell.visited = True
+        while True:
+            to_visit: list[tuple[int, int]] = []
+            # Left
+            if col > 0 and not self._cells[col - 1][row].visited:
+                to_visit.append((row, col - 1))
+            # Right
+            if col < (self._num_cols - 1) and not self._cells[col + 1][row].visited:
+                to_visit.append((row, col + 1))
+            # Up
+            if row > 0 and not self._cells[col][row - 1].visited:
+                to_visit.append((row - 1, col))
+            # Down
+            if row < (self._num_rows - 1) and not self._cells[col][row + 1].visited:
+                to_visit.append((row + 1, col))
+            
+            if not len(to_visit):
+                if self._win:
+                    self._draw_cell(row, col)
+                return
+            
+            selected_visit = random.randrange(len(to_visit))
+            (visit_row, visit_col) = to_visit[selected_visit]
+            visit_cell: Cell = self._cells[visit_col][visit_row]
+            if visit_cell._x1 < cell._x1:
+                # Left of current
+                cell.has_left_wall = False
+                visit_cell.has_right_wall = False
+            elif visit_cell._x1 > cell._x1:
+                # Right of current
+                cell.has_right_wall = False
+                visit_cell.has_left_wall = False
+            elif visit_cell._y1 < cell._y1:
+                # Above current
+                cell.has_top_wall = False
+                visit_cell.has_bottom_wall = False
+            elif visit_cell._y1 > cell._y1:
+                # Below current
+                cell.has_bottom_wall = False
+                visit_cell.has_top_wall = False
+            else:
+                raise Exception("Trying to break down walls but got the logic wrong")
+
+            self._break_walls_r(visit_row, visit_col)
+
+    def _reset_cells_visited(self):
+        for col in self._cells:
+            for cell in col:
+                cell.visited = False
